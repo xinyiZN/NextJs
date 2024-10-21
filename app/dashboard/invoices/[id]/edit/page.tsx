@@ -7,7 +7,7 @@ interface PageProps {
   }
 }
 export default async function Page({ params }: PageProps) {
-  const id = params.id
+  const { id } = params
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
     fetchCustomers(),
