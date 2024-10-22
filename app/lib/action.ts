@@ -4,6 +4,8 @@ import { sql } from "@vercel/postgres"
 import { revalidatePath } from "next/dist/server/web/spec-extension/revalidate"
 
 import { redirect } from "next/navigation"
+import { signIn } from "@/auth"
+import { AuthError } from "next-auth"
 
 //定义与表单对象的形状匹配的架构,此架构将在将 formData 保存到数据库之前对其进行验证。
 const FormSchema = z.object({
@@ -43,4 +45,21 @@ export async function CreateInvoice(formData: FormData) {
 export async function deleteInvoice(id: string) {
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath('/dashboard/invoices');
+}
+
+
+export async function authenticate(preState: string | undefined, formData: FormData) {
+  try {
+    await signIn('credentials', formData)
+  } catch (err) {
+    if (err instanceof AuthError) {
+      switch (err.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw err
+  }
 }
