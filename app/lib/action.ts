@@ -50,6 +50,7 @@ export async function deleteInvoice(id: string) {
 
 export async function authenticate(preState: string | undefined, formData: FormData) {
   try {
+    //使用 'credentials' 作为第一个参数告诉 next-auth 使用你的自定义凭据验证逻辑
     await signIn('credentials', formData)
   } catch (err) {
     if (err instanceof AuthError) {
